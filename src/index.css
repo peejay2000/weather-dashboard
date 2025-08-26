@@ -1,6 +1,11 @@
 @import "tailwindcss";
 
-/* small visual polish */
-body {
-  @apply bg-slate-50 text-slate-800;
+/* small custom styles */
+.hero-bg {
+  background: linear-gradient(180deg, #f3f6ff 0%, #ffffff 35%, #f8fbff 100%);
+}
+.weather-card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(245,247,255,0.95));
+  border-radius: 18px;
+  box-shadow: 0 12px 30px rgba(90,100,200,0.06);
 }

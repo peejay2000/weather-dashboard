@@ -1,8 +1,11 @@
-export default function ErrorMessage({ message }) {
+export default function ErrorMessage({ message, onClear }) {
   if (!message) return null;
   return (
-    <div className="fixed bottom-6 right-6 bg-red-50 text-red-700 border border-red-100 p-3 rounded shadow">
-      <strong>Error:</strong> {message}
+    <div className="p-3 bg-red-50 border border-red-100 rounded text-red-700">
+      <div className="flex justify-between items-center">
+        <div>{message}</div>
+        <button onClick={onClear} className="ml-3 text-sm underline">Dismiss</button>
+      </div>
     </div>
   );
 }
