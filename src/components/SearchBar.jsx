@@ -1,62 +1,56 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-export default function SearchBar({ onSearch, onUseLocation, loading }) {
-  const [text, setText] = useState('');
+export default function SearchBar({ onSearch }) {
+  const [q, setQ] = useState("");
   const [recent, setRecent] = useState([]);
 
   useEffect(() => {
-    const r = JSON.parse(localStorage.getItem('recent_searches') || '[]');
-    setRecent(r);
-  }, [loading]);
+    try {
+      setRecent(JSON.parse(localStorage.getItem("recentSearches") || "[]"));
+    } catch {
+      setRecent([]);
+    }
+  }, []);
 
-  function submit(e) {
-    e.preventDefault();
-    if (!text.trim()) return;
-    onSearch(text.trim());
-    setText('');
-    const r = JSON.parse(localStorage.getItem('recent_searches') || '[]');
-    setRecent(r);
-  }
+  const submit = (e) => {
+    e?.preventDefault();
+    if (!q?.trim()) return;
+    onSearch(q.trim());
+    setQ("");
+    // recent will be updated by hook
+    setTimeout(() => setRecent(JSON.parse(localStorage.getItem("recentSearches") || "[]")), 200);
+  };
 
   return (
-    <div className="w-full flex items-center gap-4">
-      <form onSubmit={submit} className="flex-1 flex gap-2">
-        <input
-          aria-label="Search city"
-          className="w-full border border-gray-200 rounded-lg px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
-          placeholder="Enter city name..."
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-        />
-        <button type="submit" className="px-4 py-2 bg-primary text-white rounded-lg shadow-sm">
-          {loading ? 'Searching...' : 'Search'}
-        </button>
-      </form>
+    <form onSubmit={submit} className="relative flex items-center gap-2">
+      <input
+        className="px-4 py-2 rounded-lg border w-64 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+        placeholder="Enter city name..."
+        value={q}
+        onChange={(e) => setQ(e.target.value)}
+        aria-label="Search city"
+      />
+      <button
+        type="submit"
+        className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+      >
+        Search
+      </button>
 
-      <div className="flex gap-2">
-        <button onClick={onUseLocation} className="px-3 py-2 border rounded-lg">
-          Use my location
-        </button>
-      </div>
-
-      <div className="ml-3">
-        {recent.length > 0 && (
-          <div className="text-sm text-gray-500">
-            Recent:
-            <div className="flex flex-wrap gap-2 mt-1">
-              {recent.map((r) => (
-                <button
-                  key={r}
-                  onClick={() => onSearch(r)}
-                  className="text-xs px-2 py-1 bg-gray-100 rounded"
-                >
-                  {r}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
+      {recent.length > 0 && (
+        <div className="absolute top-full left-0 mt-2 bg-white rounded-lg shadow p-2 w-64 z-10">
+          <div className="text-xs text-slate-500 px-1">Recent</div>
+          {recent.map((r) => (
+            <button
+              key={r}
+              onClick={() => onSearch(r)}
+              className="w-full text-left px-2 py-1 rounded hover:bg-slate-50"
+            >
+              {r}
+            </button>
+          ))}
+        </div>
+      )}
+    </form>
   );
 }
