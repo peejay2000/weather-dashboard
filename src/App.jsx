@@ -4,6 +4,7 @@ import SearchBar from "./components/SearchBar";
 import WeatherCard from "./components/WeatherCard";
 import Forecast from "./components/Forecast";
 import ErrorMessage from "./components/ErrorMessage";
+import hero from "./assets/hero.png";
 
 export default function App() {
   const { data, loading, error, fetchByCity, refresh, fetchByCoords } = useWeather();
@@ -32,7 +33,7 @@ export default function App() {
         <section className="lg:col-span-2">
           {/* hero card showing illustration (put your hero.png into public/assets) */}
           <div className="rounded-2xl overflow-hidden bg-gradient-to-r from-indigo-100 to-pink-100 p-6 mb-6">
-            <img src="/assets/hero.png" alt="hero" className="w-full rounded-xl shadow" />
+            <img src={hero} alt="hero" className="w-full rounded-xl shadow" />
           </div>
 
           <WeatherCard data={data} loading={loading} onRefresh={refresh} />
