@@ -1,26 +1,24 @@
 import TemperatureChart from "./TemperatureChart";
-import { timeFromUnix } from "../utils/format";
 
 export default function WeatherCard({ data, loading, onRefresh }) {
   if (loading) return <div className="p-6">Loading…</div>;
   if (!data) return <div className="p-6">Search for a city to see weather.</div>;
 
-  const { current, oneCall } = data;
-  const weather = current.weather?.[0] || oneCall?.current?.weather?.[0] || {};
+  const { current, forecast } = data;
+  const weather = current.weather?.[0] || {};
   const icon = weather.icon ? `https://openweathermap.org/img/wn/${weather.icon}@2x.png` : null;
 
-  const temp = Math.round(current.main?.temp ?? oneCall.current.temp);
-  const humidity = current.main?.humidity ?? oneCall.current.humidity;
-  const wind = current.wind?.speed ?? oneCall.current.wind_speed;
-  const sunrise = oneCall.current.sunrise || current.sys?.sunrise;
-  const sunset = oneCall.current.sunset || current.sys?.sunset;
-  const uvi = oneCall.current.uvi ?? null;
+  const temp = Math.round(current.main?.temp);
+  const humidity = current.main?.humidity;
+  const wind = current.wind?.speed;
 
   return (
     <div className="bg-white rounded-2xl shadow p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-semibold">{current.name}{current.sys?.country ? `, ${current.sys.country}` : ""}</h2>
+          <h2 className="text-2xl font-semibold">
+            {current.name}{current.sys?.country ? `, ${current.sys.country}` : ""}
+          </h2>
           <div className="text-slate-500">{weather.description || ""}</div>
         </div>
 
@@ -37,17 +35,18 @@ export default function WeatherCard({ data, loading, onRefresh }) {
           <div className="text-lg font-semibold">{humidity}%</div>
         </div>
         <div className="p-4 rounded-lg bg-slate-50">
-          <div className="text-xs text-slate-500">UV Index</div>
-          <div className="text-lg font-semibold">{uvi ?? "—"}</div>
+          <div className="text-xs text-slate-500">Wind</div>
+          <div className="text-lg font-semibold">{wind} m/s</div>
         </div>
         <div className="p-4 rounded-lg bg-slate-50">
-          <div className="text-xs text-slate-500">Sunrise / Sunset</div>
-          <div className="text-sm">{timeFromUnix(sunrise)} / {timeFromUnix(sunset)}</div>
+          <div className="text-xs text-slate-500">Forecast Points</div>
+          <div className="text-sm">{forecast.list.length}</div>
         </div>
       </div>
 
       <div className="mt-6">
-        <TemperatureChart hourly={oneCall.hourly.slice(0, 24)} />
+        {/* Show first 8 intervals (~24h) */}
+        <TemperatureChart hourly={forecast.list.slice(0, 8)} />
       </div>
 
       <div className="mt-4 flex justify-end">

@@ -1,29 +1,49 @@
 const BASE = "https://api.openweathermap.org/data/2.5";
 
 /**
- * Fetch current weather for a city (returns the "weather" object with coord)
+ * Fetch current weather for a city
+ * Returns { name, coord, main, wind, weather, sys }
  */
 export async function fetchCurrentWeather(city, apiKey) {
   if (!apiKey) throw new Error("Missing API key");
+
   const url = `${BASE}/weather?q=${encodeURIComponent(city)}&units=metric&appid=${apiKey}`;
   const res = await fetch(url);
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.message || "City not found");
+
+  let json;
+  try {
+    json = await res.json();
+  } catch (err) {
+    throw new Error("Invalid API response");
   }
-  return res.json();
+
+  if (!res.ok) {
+    throw new Error(json?.message || "City not found");
+  }
+
+  return json;
 }
 
 /**
- * Fetch One Call data by lat/lon (hourly + daily + current includes uvi)
+ * Fetch 5-day / 3-hour forecast by coordinates
+ * Returns { list: [ { dt, main, wind, weather, dt_txt } ] }
  */
-export async function fetchOneCall(lat, lon, apiKey, exclude = "minutely") {
+export async function fetchForecast(lat, lon, apiKey) {
   if (!apiKey) throw new Error("Missing API key");
-  const url = `${BASE}/onecall?lat=${lat}&lon=${lon}&exclude=${exclude}&units=metric&appid=${apiKey}`;
+
+  const url = `${BASE}/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`;
   const res = await fetch(url);
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.message || "Forecast fetch failed");
+
+  let json;
+  try {
+    json = await res.json();
+  } catch (err) {
+    throw new Error("Invalid API response");
   }
-  return res.json();
+
+  if (!res.ok) {
+    throw new Error(json?.message || "Failed to fetch forecast");
+  }
+
+  return json;
 }
